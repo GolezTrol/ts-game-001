@@ -1,0 +1,19 @@
+{
+  "game": {
+    "author": "Jos Visser",
+    "title": "Drive?",
+    "desc": "My First Typescript as well as My First TIC. Could it become a recreation of my famous QBasic game?",
+    "cart": "ts-game-001.tic",
+    "backup": true
+  },
+  "tic": {
+    "ticExecutable": "C:/Tools/tic80/tic80.exe",
+    "cartsDirectory": "C:\\Users\\Jos\\AppData\\Roaming\\com.nesbox.tic\\TIC-80\\"
+  },
+  "compression": {
+    "compressedFile": "build/compressed.js",
+    "indentLevel": 1,
+    "compress": false,
+    "mangle": false
+  }
+}
