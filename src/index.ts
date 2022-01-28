@@ -1,10 +1,15 @@
-let t: number = 0;
+// title: Drive Reloaded
+// author: GolezTrol
+// desc: My First Typescript as well as My First TIC. Could it become a recreation of my famous QBasic game?
+// script:  js
+
+let t: number = 1;
 let x: number;
 let y: number;
 
 function TIC(): void {
   // small trick to ensure that everything is loaded before init() call
-  if (t === 0) {
+  if (t === 1) {
     init();
   }
 
