@@ -23,10 +23,10 @@ class ButtonController extends Controller {
     }
 
     tic(t: number): void {
-        /*if (this.player === undefined) return;
+        if (this.player === undefined) return;
 
         if (btnp(this.left)) this.player.steerLeft();
         if (btnp(this.right)) this.player.steerRight();
-        if (btnp(this.fire)) this.player.fire();*/
+        if (btnp(this.fire)) this.player.fire();
     }
 }

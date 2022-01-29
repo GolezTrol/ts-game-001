@@ -26,10 +26,12 @@ class Player{
     }
     tic(t: number): void {
         this.controller?.tic(t);
+        this.angle += this.steer;
+        this.angle = (this.angle + 360) % 360;
     }
 
     draw(t: number): void {
-        var index = (this.angle + 22.5) / 45;
+        var index = ((this.angle + 22.5) / 45) % 8;
         print(index, 84, 100);
 
         spr(256 + Math.floor(index) * 2, this.x, this.y, 0, 1, 0, 0, 2, 2);
