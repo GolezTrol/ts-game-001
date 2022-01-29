@@ -2,6 +2,11 @@
 
 2021-01-29
 
+- Played a bit with the palette. 'C' toggles color scheme for the car. Greys for the weels are updated with the tic.
+- 'V' toggles vehicle type.
+
+2021-01-29
+
 - Made a start on writing some game logic. The game itself is supposed to be a really simple death match game. Labeled 'Drive', you'd be an ever moving player. The players had a mostly constant speed, and a certain steer (the position of their steering wheel as it were). So instead of moving to the left or to the right, you could rotate your steering wheel a bit, indirectly influencing how you're going to move from that moment on.
 - Originally written in QBasic, the game field was 320x200, and would wrap around. The players (and bullets) were just single pixels. The TIC-80 has a lower resolution, and I do want to use sprites for players, so if I don't introduce a scrolling field, the map is going to be too cramped to play, I think. I'll have to test and see.
 - But probably, there is going to be a split-screen view, on a larger map.

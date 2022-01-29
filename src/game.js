@@ -28,6 +28,8 @@ var Player = /** @class */ function() {
   this.angle = angle;
   this.speed = speed;
   this.steer = 0;
+  this.color = 0;
+  this.car = 0;
  }
  Player.prototype.steerLeft = function() {
   if (this.steer > 0 - this.MaxSteer) this.steer--;
@@ -46,11 +48,81 @@ var Player = /** @class */ function() {
   this.y += Math.sin(rad) * this.speed;
   this.x = (this.x + screen.width) % screen.width;
   this.y = (this.y + screen.height) % screen.height;
+  // 0:red, 1:green, 2: blue, 3: warm/rainbow, 4: greyscale, 5: metal
+  if (keyp(3 /*C*/, 1e3, 1e3)) {
+   ++this.color;
+   this.color %= 6;
+  }
+  // 0: Tractor, 1: Tank
+  if (key(22 /*V*/)) {
+   this.car++;
+   this.car %= 2;
+  }
+ };
+ Player.prototype.setPalette = function(to) {
+  // Default red
+  poke4(PALETTE_MAP * 2 + 1, 1);
+  poke4(PALETTE_MAP * 2 + 2, 2);
+  poke4(PALETTE_MAP * 2 + 3, 3);
+  poke4(PALETTE_MAP * 2 + 4, 4);
+  if (to == 1) {
+   // Green
+   poke4(PALETTE_MAP * 2 + 1, 8);
+   poke4(PALETTE_MAP * 2 + 2, 7);
+   poke4(PALETTE_MAP * 2 + 3, 6);
+   poke4(PALETTE_MAP * 2 + 4, 5);
+  } else if (to == 2) {
+   // Blue
+   poke4(PALETTE_MAP * 2 + 1, 8);
+   poke4(PALETTE_MAP * 2 + 2, 9);
+   poke4(PALETTE_MAP * 2 + 3, 10);
+   poke4(PALETTE_MAP * 2 + 4, 11);
+  } else if (to == 3) {
+   // Warm
+   poke4(PALETTE_MAP * 2 + 2, 9);
+   poke4(PALETTE_MAP * 2 + 3, 6);
+  } else if (to == 4) {
+   // Grey
+   poke4(PALETTE_MAP * 2 + 1, 15);
+   poke4(PALETTE_MAP * 2 + 2, 14);
+   poke4(PALETTE_MAP * 2 + 3, 13);
+   poke4(PALETTE_MAP * 2 + 4, 12);
+  } else if (to == 5) {
+   // Metal
+   poke4(PALETTE_MAP * 2 + 1, 15);
+   poke4(PALETTE_MAP * 2 + 2, 7);
+   poke4(PALETTE_MAP * 2 + 3, 10);
+   poke4(PALETTE_MAP * 2 + 4, 12);
+  }
+ };
+ Player.prototype.setWheelPalette = function(t) {
+  // White stays white, black stays black, but the three grays can shift 
+  // to light (lightest becoming white) or dark (darkest becoming black)
+  poke4(PALETTE_MAP * 2 + 13, 13);
+  poke4(PALETTE_MAP * 2 + 14, 14);
+  poke4(PALETTE_MAP * 2 + 15, 15);
+  var delay = 3;
+  var i = Math.floor(t % (4 * delay) / delay);
+  if (i == 0) {
+   poke4(PALETTE_MAP * 2 + 13, 14);
+   poke4(PALETTE_MAP * 2 + 14, 13);
+   poke4(PALETTE_MAP * 2 + 15, 15);
+  } else if (i == 1) {
+   poke4(PALETTE_MAP * 2 + 13, 13);
+   poke4(PALETTE_MAP * 2 + 14, 13);
+   poke4(PALETTE_MAP * 2 + 15, 14);
+  } else if (i == 2) {
+   poke4(PALETTE_MAP * 2 + 13, 14);
+   poke4(PALETTE_MAP * 2 + 14, 13);
+   poke4(PALETTE_MAP * 2 + 15, 14);
+  } else if (i == 3) {}
  };
  Player.prototype.draw = function(t) {
   var index = (this.angle + 22.5) / 45 % 8;
-  print(index, 84, 100);
-  spr(256 + Math.floor(index) * 2, this.x - 8, this.y - 8, 0, 1, 0, 0, 2, 2);
+  print(index, 84, 100, undefined, undefined, 1, true);
+  this.setPalette(this.color);
+  this.setWheelPalette(t);
+  spr(256 + this.car * 32 + Math.floor(index) * 2, this.x - 8, this.y - 8, 0, 1, 0, 0, 2, 2);
  };
  return Player;
 }();
@@ -78,13 +150,15 @@ var ButtonController = /** @class */ function(_super) {
  return ButtonController;
 }(Controller);
 
+var PALETTE_MAP = 16368;
+
 var Game = /** @class */ function() {
  function Game() {
   this.player = new Player({
    x: 100,
    y: 100,
    angle: 0,
-   speed: .5
+   speed: .7
   });
   var controller = new ButtonController(2, 3, 0);
   this.player.controller = controller;
@@ -169,6 +243,38 @@ function TIC() {
 // 029:21d0000012e0000021e0000011f0000000000000000000000000000000000000
 // 030:0002323200002312000001210000001e0000000f000000000000000000000000
 // 031:200000001e000000ef000000f000000000000000000000000000000000000000
+// 032:000000000000000000000000000dcede000ddede000344430004433300034313
+// 033:000000000000000000000000deded000deded000434340003434300013333300
+// 034:0000000000000000000000ee00000eee00000eee000eeeee000eeeee000fdeee
+// 035:0000000000000000f0000000ee000000eef00000eeee0000eeeee000eeeeef00
+// 036:0000000000000000000000000000dd650000cd550000ee560000dd560000ee66
+// 037:0000000000000000000000006567e0005667d000666ff0007667e000667ff000
+// 038:000000000000000000000000000000e00000000e000000fe00000eee0000eee0
+// 039:000000000000000000000000fee00000dee00000eeeee000eeeeee00eeeeee00
+// 040:000000000000000000000000000deded000deded000565650006565600666667
+// 041:000000000000000000000000edecd000ededd000655560006665500067656000
+// 042:0000000000000000e0000000ee0000ef00ee0eee00eeeeee000eeeee00eeeeee
+// 043:00000000000000000000000000000000e0000000ee000000eef0e0000eee0000
+// 044:000000000000000000000006000dd566000ee656000dd566000ee656000dd567
+// 045:000000000000000000000000767e000076ff0000767e000076ff0000777e0000
+// 046:00000000000000000000000f000000ee00000eee0000feee000eeeee00feeeee
+// 047:0000ee000000e000e0ee0000eeee0000eee00000eeee0000eeeee000eeeef000
+// 048:000433320003222100077f7f000edfef00000000000000000000000000000000
+// 049:11111100133330007f7f7000efefe00000000000000000000000000000000000
+// 050:0000eee0000e0fee000000ee0000000e00000000000000000000000000000000
+// 051:eeeeee00eeeee000eeeeee00eee0ee00fe0000ee0000000e0000000000000000
+// 052:0000dd560000ee650000dd560000ee650000dd56000000000000000000000000
+// 053:7777e000676ff0006767e000676ff0006767e000600000000000000000000000
+// 054:000feeee000eeeee0000eeee00000eee0000eeee0000ee0e000e000000ee0000
+// 055:eeeeef00eeeee000eeef0000eee00000ee000000f00000000000000000000000
+// 056:00077777000666670007f7f7000efefe00000000000000000000000000000000
+// 057:6666500076666000f7f77000fefde00000000000000000000000000000000000
+// 058:00feeeee000eeeee0000eeee00000fee000000ee0000000f0000000000000000
+// 059:eeedf000eeeee000eeeee000eee00000eee00000ee0000000000000000000000
+// 060:000ee666000dd567000ee566000cd555000dd656000000000000000000000000
+// 061:67ff0000667e000066ff0000667d0000567e0000000000000000000000000000
+// 062:00eeeeee00eeeeee000eeeee00000eed00000eef000000000000000000000000
+// 063:0eee0000eee00000ef000000e00000000e000000000000000000000000000000
 // </SPRITES>
 
 // <WAVES>
@@ -178,7 +284,7 @@ function TIC() {
 // </WAVES>
 
 // <SFX>
-// 000:000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000304000000000
+// 000:010001000100010001000100010001000100010001000100010001000100010001000100010001000100010001000100010001000100010001000100008000000000
 // </SFX>
 
 // <PALETTE>
