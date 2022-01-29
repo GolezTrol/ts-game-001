@@ -1,40 +1,140 @@
+var __extends = this && this.__extends || function() {
+ var extendStatics = function(d, b) {
+  extendStatics = Object.setPrototypeOf || {
+   __proto__: []
+  } instanceof Array && function(d, b) {
+   d.__proto__ = b;
+  } || function(d, b) {
+   for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p];
+  };
+  return extendStatics(d, b);
+ };
+ return function(d, b) {
+  if (typeof b !== "function" && b !== null) throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+  extendStatics(d, b);
+  function __() {
+   this.constructor = d;
+  }
+  d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+ };
+}();
+
+/// <reference path="player.ts"/>
+/// <reference path="controller.ts"/>
+var Game = /** @class */ function() {
+ function Game() {
+  this.screen = {
+   width: 240,
+   height: 236
+  };
+  this.player = new Player(100, 100, 0, 60);
+  var controller = new ButtonController(2, 3, 0);
+  this.player.controller = controller;
+  controller.player = this.player;
+ }
+ Game.prototype.tic = function(t) {
+  //poke(0x03FF8, 10)
+  cls(0);
+ //13);
+  this.player.tic(t);
+  this.player.draw(t);
+ };
+ return Game;
+}();
+
 // title: Drive Reloaded
 // author: GolezTrol
 // desc: My First Typescript as well as My First TIC. Could it become a recreation of my famous QBasic game?
 // script:  js
+// NOTE module style imports don't work in TIC: import {Game, Player} from './core/game'; 
+/// <reference path="./core/game.ts"/>
 var t = 1;
 
 var x;
 
 var y;
 
+var game = new Game();
+
 function TIC() {
  // small trick to ensure that everything is loaded before init() call
  if (t === 1) {
   init();
  }
- if (btn(0)) {
-  y--;
- }
- if (btn(1)) {
-  y++;
- }
- if (btn(2)) {
-  x--;
- }
- if (btn(3)) {
-  x++;
- }
- cls(13);
- spr(1 + Math.floor(t % 60 / 30) * 2, x, y, 14, 3, 0, 0, 2, 2);
- print("HELLO WORLD!", 84, 84);
- t++;
+ game.tic(t);
+ /*  if (btn(0)) {
+        y--;
+      }
+      if (btn(1)) {
+        y++;
+      }
+      if (btn(2)) {
+        x--;
+      }
+      if (btn(3)) {
+        x++;
+      }
+    
+      cls(0); //13);
+      spr(1 + Math.floor((t % 60) / 30) * 2, x, y, 14, 3, 0, 0, 2, 2);
+      spr(256 + Math.floor((t % 90) / 12) * 2, game.player.x, game.player.y, 0, 1, 0, 0, 2, 2);
+      print("HELLO WORLD!", 84, 84);*/ t++;
 }
 
 function init() {
  x = 96;
  y = 24;
 }
+
+var Controller = /** @class */ function() {
+ function Controller() {}
+ return Controller;
+}();
+
+var ButtonController = /** @class */ function(_super) {
+ __extends(ButtonController, _super);
+ function ButtonController(left, right, fire) {
+  var _this = _super.call(this) || this;
+  _this.left = left;
+  _this.right = right;
+  _this.fire = fire;
+  return _this;
+ }
+ ButtonController.prototype.tic = function(t) {
+  /*if (this.player === undefined) return;
+
+        if (btnp(this.left)) this.player.steerLeft();
+        if (btnp(this.right)) this.player.steerRight();
+        if (btnp(this.fire)) this.player.fire();*/};
+ return ButtonController;
+}(Controller);
+
+var Player = /** @class */ function() {
+ function Player(x, y, angle, speed) {
+  this.MaxSteer = 3;
+  this.x = x;
+  this.y = y;
+  this.angle = angle;
+  this.speed = speed;
+  this.steer = 0;
+ }
+ Player.prototype.steerLeft = function() {
+  if (this.steer > 0 - this.MaxSteer) this.steer--;
+ };
+ Player.prototype.steerRight = function() {
+  if (this.steer < this.MaxSteer) this.steer++;
+ };
+ Player.prototype.fire = function() {};
+ Player.prototype.tic = function(t) {
+  var _a;
+  (_a = this.controller) === null || _a === void 0 ? void 0 : _a.tic(t);
+ };
+ Player.prototype.draw = function(t) {
+  var index = (this.angle + 22.5) / 45;
+  spr(256 + Math.floor(index) * 2, this.x, this.y, 0, 1, 0, 0, 2, 2);
+ };
+ return Player;
+}();
 // <TILES>
 // 001:eccccccccc888888caaaaaaaca888888cacccccccacc0ccccacc0ccccacc0ccc
 // 002:ccccceee8888cceeaaaa0cee888a0ceeccca0ccc0cca0c0c0cca0c0c0cca0c0c

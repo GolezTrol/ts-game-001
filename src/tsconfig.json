@@ -4,6 +4,7 @@
     "lib": ["es5"],
     "target": "es5",
     "outFile": "build/compiled.js",
-    "strict": true
+    "strict": true,
+    "module": "amd"
   }
 }

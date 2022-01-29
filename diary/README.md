@@ -1,5 +1,26 @@
 # Diary
 
+2021-01-29
+
+- Made a start on writing some game logic. The game itself is supposed to be a really simple death match game. Labeled 'Drive', you'd be an ever moving player. The players had a mostly constant speed, and a certain steer (the position of their steering wheel as it were). So instead of moving to the left or to the right, you could rotate your steering wheel a bit, indirectly influencing how you're going to move from that moment on.
+- Originally written in QBasic, the game field was 320x200, and would wrap around. The players (and bullets) were just single pixels. The TIC-80 has a lower resolution, and I do want to use sprites for players, so if I don't introduce a scrolling field, the map is going to be too cramped to play, I think. I'll have to test and see.
+- But probably, there is going to be a split-screen view, on a larger map.
+- Since the game requires only 3 keys per player, the original game featured controls for up to 7 players on a single keyboard, although more than 4 was not really practical. It would fit, I think 20 or 24 players in total. The rest played by 'AI'. By this time, I had rewritten it in C, by the way, since QBasic's input abstraction didn't handle the state of so many keys. I needed to go a bit more low level for that. In practise, the hardware (at the time at least), seemed to support only 8 key states as well, but for 4 players that worked quite okay.
+- So, this game is going to have scrolling, and a split screen view. Up to 4 players should be enough, so for 2, it can be split into a left and right pane. For 3 or 4 players, it can be in 4 views, with the 4th maybe to show random CPU players, if there are only 3 human players. Maybe a shared radar can be shown in the center top for 2 players, center mid for 4.
+
+![Split screen layout, 2 players](./2021-01-29-layout-split-001.png)
+_sketch of how it_ could _look, when two players get near each other in split screen._
+
+- Other ways to up this game compared to the original:
+  - More interesting background for map.
+  - Actual surface difference, inaccessible areas, or areas that affect speed (mud, water)
+  - Different effect on different vehicles.
+  - AI players that are smart in how they predict your position, trying to intercept you if you go around an inaccessible area.
+
+Anyway, not there by far. :D
+
+----
+
 2021-01-28
 
 - This auto-refresh is nice. Hitting F5 will start TIC with the game loaded, and tsc-80 monitoring file changes and compiling on the fly. The workflow of typing code, checking the feedback from VS Code ([Typescript@next extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-typescript-next)).
