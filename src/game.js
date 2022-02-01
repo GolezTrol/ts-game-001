@@ -53,47 +53,44 @@ var Player = /** @class */ function() {
    ++this.color;
    this.color %= 6;
   }
-  // 0: Tractor, 1: Tank
-  if (key(22 /*V*/)) {
+  // 0: Tractor, 1: Tank, 2: 8x8, 3: [...], 4: quarter 
+  if (keyp(22 /*V*/, 1e3, 1e3)) {
    this.car++;
-   this.car %= 2;
+   this.car %= 5;
   }
  };
- Player.prototype.setPalette = function(to) {
-  // Default red
-  poke4(PALETTE_MAP * 2 + 1, 1);
-  poke4(PALETTE_MAP * 2 + 2, 2);
-  poke4(PALETTE_MAP * 2 + 3, 3);
-  poke4(PALETTE_MAP * 2 + 4, 4);
+ Player.prototype.setPalette = function(to, flipHighlight) {
+  // A car can use 4 colors changing colors, as well as changing greyscales for the wheels
+  // The changing colors are 1,2,3 and 4, which are dark purple, red, orange and yellow.
+  // The other colors are also ranges of 4 dark to light colors, to get another color style in the car.
+  // Depending on the car, the lightest and darkest color can be used as highlight, and will be swapped.
+  var colors;
   if (to == 1) {
    // Green
-   poke4(PALETTE_MAP * 2 + 1, 8);
-   poke4(PALETTE_MAP * 2 + 2, 7);
-   poke4(PALETTE_MAP * 2 + 3, 6);
-   poke4(PALETTE_MAP * 2 + 4, 5);
+   colors = [ 9, 7, 6, 5 ];
   } else if (to == 2) {
    // Blue
-   poke4(PALETTE_MAP * 2 + 1, 8);
-   poke4(PALETTE_MAP * 2 + 2, 9);
-   poke4(PALETTE_MAP * 2 + 3, 10);
-   poke4(PALETTE_MAP * 2 + 4, 11);
+   colors = [ 8, 9, 10, 11 ];
   } else if (to == 3) {
    // Warm
-   poke4(PALETTE_MAP * 2 + 2, 9);
-   poke4(PALETTE_MAP * 2 + 3, 6);
+   colors = [ 1, 9, 6, 4 ];
   } else if (to == 4) {
    // Grey
-   poke4(PALETTE_MAP * 2 + 1, 15);
-   poke4(PALETTE_MAP * 2 + 2, 14);
-   poke4(PALETTE_MAP * 2 + 3, 13);
-   poke4(PALETTE_MAP * 2 + 4, 12);
+   colors = [ 15, 14, 13, 12 ];
   } else if (to == 5) {
    // Metal
-   poke4(PALETTE_MAP * 2 + 1, 15);
-   poke4(PALETTE_MAP * 2 + 2, 7);
-   poke4(PALETTE_MAP * 2 + 3, 10);
-   poke4(PALETTE_MAP * 2 + 4, 12);
+   colors = [ 15, 7, 10, 12 ];
+  } else {
+   // Red, default
+   colors = [ 1, 2, 3, 4 ];
   }
+  if (flipHighlight) {
+   colors = [ colors[3], colors[1], colors[2], colors[0] ];
+  }
+  poke4(PALETTE_MAP * 2 + 1, colors[0]);
+  poke4(PALETTE_MAP * 2 + 2, colors[1]);
+  poke4(PALETTE_MAP * 2 + 3, colors[2]);
+  poke4(PALETTE_MAP * 2 + 4, colors[3]);
  };
  Player.prototype.setWheelPalette = function(t) {
   // White stays white, black stays black, but the three grays can shift 
@@ -118,11 +115,51 @@ var Player = /** @class */ function() {
   } else if (i == 3) {}
  };
  Player.prototype.draw = function(t) {
-  var index = (this.angle + 22.5) / 45 % 8;
-  print(index, 84, 100, undefined, undefined, 1, true);
-  this.setPalette(this.color);
   this.setWheelPalette(t);
-  spr(256 + this.car * 32 + Math.floor(index) * 2, this.x - 8, this.y - 8, 0, 1, 0, 0, 2, 2);
+  if (this.car < 2) {
+   this.setPalette(this.color, false);
+   var index = (this.angle + 22.5) / 45 % 8;
+   print(index, 84, 100, undefined, undefined, 1, true);
+   spr(256 + this.car * 32 + Math.floor(index) * 2, this.x - 8, this.y - 8, 0, 1, 0, 0, 2, 2);
+  } else if (this.car >= 2 && this.car <= 3) {
+   this.setPalette(this.color, false);
+   var index = (this.angle + 11.25) / 22.5 % 16;
+   print(index, 84, 100, undefined, undefined, 1, true);
+   spr(320 + (this.car - 2) * 16 + Math.floor(index), this.x - 4, this.y - 4, 6, 1, 0, 0, 1, 1);
+  } else if (this.car == 4) {
+   var index = (this.angle + 11.25) / 22.5 % 16;
+   var spriteIndex = Math.floor(index);
+   print(spriteIndex, 84, 100, undefined, undefined, 1, true);
+   var rotate = Math.floor(spriteIndex / 4);
+   print(rotate, 84, 110, undefined, undefined, 1, true);
+   var r = 0;
+   switch (rotate) {
+    case 0:
+    r = 0;
+    break;
+
+    case 1:
+    r = 1;
+    break;
+
+    case 2:
+    r = 2;
+    break;
+
+    case 3:
+    r = 3;
+    break;
+
+    default:
+    r = 0;
+    break;
+   }
+   var flipHighlight = [ 4, 5, 8, 9, 11, 14, 15 ].indexOf(spriteIndex) > -1;
+   spriteIndex %= 4;
+   print(x, 84, 120, undefined, undefined, 1, true);
+   this.setPalette(this.color, flipHighlight);
+   spr(352 + (this.car - 4) * 16 + spriteIndex * 2, this.x - 4, this.y - 4, 0, 1, 0, r, 2, 2);
+  }
  };
  return Player;
 }();
@@ -275,6 +312,40 @@ function TIC() {
 // 061:67ff0000667e000066ff0000667d0000567e0000000000000000000000000000
 // 062:00eeeeee00eeeeee000eeeee00000eed00000eef000000000000000000000000
 // 063:0eee0000eee00000ef000000e00000000e000000000000000000000000000000
+// 064:66666666666666666fe33fe663229226622292166fe11fe66666666666666666
+// 065:666666666fe666666331166663229fe66fe292166661121666666fe666666666
+// 066:66f66666633e6666f32216666e229f66661922e6666f21666666e66666666666
+// 067:666666666f33f6666e32e6666622216666199166666f22f6666e11e666666666
+// 068:6666666666f33f6666e32e66661221666619916666f22f6666e22e6666666666
+// 069:66666666666f22f6666e22e666132166661991666f22f6666e22e66666666666
+// 070:66666f666666e2166661322f66fa22e66e3291666622f666666e666666666666
+// 071:6666666666666ef6666112266efa3226633a2ef6632116666ef6666666666666
+// 072:66666666666666666ef11ef6633a3216632a21166ef11ef66666666666666666
+// 073:666666666ef6666663311666632a3ef66efa22166661111666666ef666666666
+// 074:66666666666e66666622f6666e32a16666fa22e66661221f6666e21666666f66
+// 075:666666666e22e6666f32f666661aa16666132166666e21e6666f11f666666666
+// 076:6666666666e22e6666f22f66661aa1666613216666e21e6666f11f6666666666
+// 077:66666666666e22e6666f31f6661aa166661321666e32e6666f11f66666666666
+// 078:666666666666e666666f3266661a21e66e32af66f2221666621e666666f66666
+// 079:66666666666666666fe11fe66322a2166222a1166fe11fe66666666666666666
+// 080:666666666dedede6634433366433444661331116631133366dedede666666666
+// 081:6de66666634de66664343de661334336631314466de13116666de33666666de6
+// 096:000000000000000000000000000edede000edede000224440002433300022333
+// 097:000000000000000000000000deded000deded000222220004444440033333300
+// 098:0000000000000000000eded0000edede0002244e000243340002233300021333
+// 099:000000000000000000000000ded00000deded000222ed0004442200033344400
+// 100:000000000000000d0000002d00000022000002210000223300dd243300dee433
+// 101:00000000d0000000ee000000edd000001dee000031edd000312dee003122edd0
+// 102:00000000000000000000000000ee222200dd242100ee433300dd4333000ee433
+// 103:0000000000000000000000002ee000002dd000001ee000001dd0000031ee0000
+// 112:0002133300022111000edede000edede00000000000000000000000000000000
+// 113:1111110022222000deded000deded00000000000000000000000000000000000
+// 114:00022113000eded1000edede0000000e00000000000000000000000000000000
+// 115:1113330022211100ded22000deded000000ed000000000000000000000000000
+// 116:000edd440000dee200000edd000000de0000000e000000000000000000000000
+// 117:43122de02431200022431000e2243000dd000000de0000000000000000000000
+// 118:000dd243000ee243000dd2430000ee240000dd24000000040000000000000000
+// 119:12dd000012ee000012dd0000312ee000312dd000310000000000000000000000
 // </SPRITES>
 
 // <WAVES>

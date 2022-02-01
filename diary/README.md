@@ -1,5 +1,11 @@
 # Diary
 
+2021-02-01
+
+- Thinking about vehicles. The 16x16 sprites take quite some space. 4 8x8 blocks per sprite. I got 8 per car, but I don't think it's enough for reasonably smooth animation.
+- I added an 8x8 car with 16 steps of rotations. That's half as much space as the other, and smoother movement. 8x8 should be enough, since you were just a pixel in the original game :p
+- Also trying with just 4 16x16 sprites = a quarter rotation, and solve the rest by rotating the sprite and swapping palette colors.
+
 2021-01-29
 
 - Played a bit with the palette. 'C' toggles color scheme for the car. Greys for the weels are updated with the tic.
