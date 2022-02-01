@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Launch Program",
-            "command": "cmd /C \"cd ${workspaceFolder}/src & tsc80 run\"",
+            "command": "cmd /C \"cd ${workspaceFolder}/src & tsc80 run & cleanupgamejs.bat\" ",
             "request": "launch",
             "type": "f5anything",
             "terminalName": "TSC80",
