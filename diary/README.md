@@ -6,6 +6,11 @@
 - I added an 8x8 car with 16 steps of rotations. That's half as much space as the other, and smoother movement. 8x8 should be enough, since you were just a pixel in the original game :p
 - Also trying with just 4 16x16 sprites = a quarter rotation, and solve the rest by rotating the sprite and swapping palette colors.
 
+![Split screen layout, 2 players](./2022-02-01-cars-and-colors.gif)
+_The color-changing tank at the start of the animation, is only 4 16x16 sprites._
+
+
+
 2021-01-29
 
 - Played a bit with the palette. 'C' toggles color scheme for the car. Greys for the weels are updated with the tic.
@@ -19,7 +24,7 @@
 - Since the game requires only 3 keys per player, the original game featured controls for up to 7 players on a single keyboard, although more than 4 was not really practical. It would fit, I think 20 or 24 players in total. The rest played by 'AI'. By this time, I had rewritten it in C, by the way, since QBasic's input abstraction didn't handle the state of so many keys. I needed to go a bit more low level for that. In practise, the hardware (at the time at least), seemed to support only 8 key states as well, but for 4 players that worked quite okay.
 - So, this game is going to have scrolling, and a split screen view. Up to 4 players should be enough, so for 2, it can be split into a left and right pane. For 3 or 4 players, it can be in 4 views, with the 4th maybe to show random CPU players, if there are only 3 human players. Maybe a shared radar can be shown in the center top for 2 players, center mid for 4.
 
-![Split screen layout, 2 players](./2021-01-29-layout-split-001.png)
+![Split screen layout, 2 players](./2022-01-29-layout-split-001.png)
 _sketch of how it_ could _look, when two players get near each other in split screen._
 
 - Other ways to up this game compared to the original:
@@ -38,7 +43,7 @@ Anyway, not there by far. :D
 - When it compiles, I can just alt+tab to TIC-80, and hit Ctrl+R to reload the code. This is a quite workable workflow!
 - Drew some sprites for a 'tank'.
 
-![Tank sprites](2021-01-28-tank-001.png)
+![Tank sprites](2022-01-28-tank-001.png)
 
 ----
 
